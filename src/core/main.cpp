@@ -99,7 +99,7 @@ int main()
     vector<int> w = {50};
     param.detWindowSize = w;
     smoke_adaboost::Detector test(param);
-    test.detectVideoRaw(videoPath, saveModelPath);
+    // test.detectVideoRaw(videoPath, saveModelPath);
     // double t0 = cv::getTickCount();
     // test.detectImage(imagePath, saveModelPath);
     // double t2 = ((double) (cv::getTickCount() - t0) / cv::getTickFrequency()) * 1000000.0;
