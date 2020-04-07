@@ -15,7 +15,6 @@ int main()
     // 开始训练
     // 验证
 
-    /*
     std::string datasetAnnotationFile = "data.txt";
     std::string saveFeaturesPath = "feature_big_new2.yaml";
     smoke_adaboost::smokeFeatureGenerator dataset;
@@ -86,9 +85,9 @@ int main()
     std::cout << saveModelPath << std::endl;
     classifier.saveModel(saveModelPath);
     testResult(classifier, Data);
-    */
-
     
+
+    /*
     std::string saveModelPath = "model-0.05373.yaml";
     std::string videoPath = "21.mpg";
     std::string imagePath = "51.jpg";
@@ -99,6 +98,7 @@ int main()
     vector<int> w = {50};
     param.detWindowSize = w;
     smoke_adaboost::Detector test(param);
+    */
     // test.detectVideoRaw(videoPath, saveModelPath);
     // double t0 = cv::getTickCount();
     // test.detectImage(imagePath, saveModelPath);
