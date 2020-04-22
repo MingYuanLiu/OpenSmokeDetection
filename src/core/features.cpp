@@ -3,7 +3,7 @@
 namespace smoke_adaboost
 {
 // 计算eoh和mag特征
-void calculateEohAndMag(const cv::Mat &block_img_gray_data,
+void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
                         uint16_t block_img_area,
                         std::vector<float_t> &eoh_histogram,
                         std::vector<float_t> &mag_histogram,
@@ -11,105 +11,104 @@ void calculateEohAndMag(const cv::Mat &block_img_gray_data,
                         uint8_t mag_bin)
 {
 
-    cv::Mat gradient_x, gradient_y;
-    cv::Sobel(block_img_gray_data, gradient_x, CV_32F, 1, 0); // 计算微分图像
-    cv::Sobel(block_img_gray_data, gradient_y, CV_32F, 0, 1);
+    // cv::Mat block_img_magnitude, block_img_theta;
+    // cv::cartToPolar(gradientX, gradientY, block_img_magnitude, block_img_theta, true); // 微分图像转化为幅相图
 
-    cv::Mat block_img_magnitude, block_img_theta;                                        // 微分图像对应的幅相图
-    cv::cartToPolar(gradient_x, gradient_y, block_img_magnitude, block_img_theta, true); // 微分图像转化为幅相图
+     double epsilon = 2e-21;
+     //计算eoh
+     // 根据eoh_bin来设置数组长度
+     float eoh_[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+     float mag_[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+     float sum_eoh = 0.0;
+     // 找到magnitude中的最大值
+     double m_max = 0.0;
+     
+    cv::minMaxIdx(Mag, NULL, &m_max);
+     if (!eoh_histogram.empty())
+         eoh_histogram.clear();
 
-    float epsilon = 2e-21;
-    //计算eoh
-    // 根据eoh_bin来设置数组长度
-    float eoh_[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    float mag_[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    float_t sum_eoh = 0.0;
-    // 找到magnitude中的最大值
-    double m_max = 0.0;
-    double m_min = 0.0;
-    cv::minMaxIdx(block_img_magnitude, &m_min, &m_max);
+     if (!mag_histogram.empty())
+         mag_histogram.clear();
 
-    if (!eoh_histogram.empty())
-        eoh_histogram.clear();
+     m_max = m_max == 0 ? epsilon : m_max / 2; // 在求幅值直方图中使用
 
-    if (!mag_histogram.empty())
-        mag_histogram.clear();
+    int theta_img_cols = Theta.cols;
+    int theta_img_rows = Theta.rows;
+    // const float_t *theta_img_data_ptr;
+    // const float_t *mag_img_data_ptr;
 
-    if (m_max == 0)
-    {
-        m_max = epsilon;
-    }
-    else
-    {
-        m_max = m_max / 2; // 在求幅值直方图中使用
-    }
+    // if (block_img_theta.isContinuous())
+    // {
+    //      theta_img_cols *= theta_img_rows;
+    //     theta_img_rows = 1;
+    // }
 
-    int theta_img_cols = block_img_magnitude.cols;
-    int theta_img_rows = block_img_theta.rows;
-    const float_t *theta_img_data_ptr;
-    const float_t *mag_img_data_ptr;
-
-    if (block_img_theta.isContinuous())
-    {
-        theta_img_cols *= theta_img_rows;
-        theta_img_rows = 1;
-    }
+    double bin_theta[9] = {0.0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180};
 
     for (int i = 0; i < theta_img_rows; i++)
     {
-        theta_img_data_ptr = block_img_theta.ptr<float_t>(i);
-        mag_img_data_ptr = block_img_magnitude.ptr<float_t>(i);
+        // theta_img_data_ptr = block_img_theta.ptr<float_t>(i);
+        // mag_img_data_ptr = block_img_magnitude.ptr<float_t>(i);
         for (int j = 0; j < theta_img_cols; j++)
         {
             // eoh计算部分
-            float_t theta = *theta_img_data_ptr;
+            // float_t theta = *theta_img_data_ptr;
+            float theta = Theta.at<float>(i, j);
             if (theta > 180)
             {
                 theta -= 180; // 将0～360度的相角转化为0～180度的相角
             }
-            if ((theta >= (180.0f / eoh_bin) * 0) &&
-                (theta <= (180.0f / eoh_bin) * (1)))
+            if (theta >= bin_theta[0] &&
+                theta <= bin_theta[1])
             {
-                eoh_[0] += (float)(*mag_img_data_ptr);
+                // eoh_[0] += *mag_img_data_ptr;
+                eoh_[0] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 1) &&
-                     (theta <= (180.0f / eoh_bin) * (2)))
+            else if (theta > bin_theta[1] &&
+                     theta <= bin_theta[2])
             {
-                eoh_[1] += (float)(*mag_img_data_ptr);
+                // eoh_[1] += *mag_img_data_ptr;
+                eoh_[1] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 2) &&
-                     (theta <= (180.0f / eoh_bin) * (3)))
+            else if (theta > bin_theta[2] &&
+                     theta <= bin_theta[3])
             {
-                eoh_[2] += (float)*mag_img_data_ptr;
+                // eoh_[2] += *mag_img_data_ptr;
+                eoh_[2] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 3) &&
-                     (theta <= (180.0f / eoh_bin) * (4)))
+            else if (theta > bin_theta[3] &&
+                     theta <= bin_theta[4])
             {
-                eoh_[3] += (float)*mag_img_data_ptr;
+                // eoh_[3] += *mag_img_data_ptr;
+                eoh_[3] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 4) &&
-                     (theta <= (180.0f / eoh_bin) * (5)))
+            else if (theta > bin_theta[4] &&
+                     theta <= bin_theta[5])
             {
-                eoh_[4] += (float)*mag_img_data_ptr;
+                // eoh_[4] += *mag_img_data_ptr;
+                eoh_[4] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 5) &&
-                     (theta <= (180.0f / eoh_bin) * (6)))
+            else if (theta > bin_theta[5] &&
+                     theta <= bin_theta[6])
             {
-                eoh_[5] += (float)*mag_img_data_ptr;
+                // eoh_[5] += *mag_img_data_ptr;
+                eoh_[5] += Mag.at<float>(i,j);
             }
 
-            else if ((theta > (180.0f / eoh_bin) * 6) &&
-                     (theta <= (180.0f / eoh_bin) * (7)))
+            else if (theta > bin_theta[6] &&
+                     theta <= bin_theta[7])
             {
-                eoh_[6] += (float)*mag_img_data_ptr;
+                // eoh_[6] += *mag_img_data_ptr;
+                eoh_[6] += Mag.at<float>(i,j);
             }
-            else if ((theta > (180.0f / eoh_bin) * 7) &&
-                     (theta <= (180.0f / eoh_bin) * (8)))
+            else if (theta > bin_theta[7] &&
+                     theta <= bin_theta[8])
             {
-                eoh_[7] += (float)*mag_img_data_ptr;
+                // eoh_[7] += *mag_img_data_ptr;
+                eoh_[7] += Mag.at<float>(i,j);
             }
             // mag计算部分
-            uint16_t mq = uint16_t(*mag_img_data_ptr / (m_max / mag_bin)) > mag_bin - 1 ? mag_bin - 1 : uint16_t(*mag_img_data_ptr / (m_max / mag_bin));
+            uint16_t mq = uint16_t(Mag.at<float>(i,j) / (m_max / mag_bin)) > mag_bin - 1 ? mag_bin - 1 : uint16_t(Mag.at<float>(i,j) / (m_max / mag_bin));
             // note: 这里eoh_bin和mag_bin的数值相同，因此可以放在一个循环中
             switch (mq)
             {
@@ -141,8 +140,8 @@ void calculateEohAndMag(const cv::Mat &block_img_gray_data,
                 break;
             }
 
-            mag_img_data_ptr++;
-            theta_img_data_ptr++;
+            // mag_img_data_ptr++;
+            // theta_img_data_ptr++;
         }
     }
 
@@ -166,6 +165,7 @@ void calculateEohAndMag(const cv::Mat &block_img_gray_data,
     }
 }
 
+
 // 计算lbp(局部二进制模式)特征
 void calculateModifiedLbp(const cv::Mat &block_img_gray_data,
                           uint16_t block_img_area,
@@ -174,27 +174,26 @@ void calculateModifiedLbp(const cv::Mat &block_img_gray_data,
                           uint8_t near_point_nums,
                           uint8_t lbp_bin)
 {
-    if (!lbp.empty())
+   if (!lbp.empty())
         lbp.clear();
-    /**
-     * 程序逻辑:
-     * 先对使用双线性插值对圆周上的像素点进行插值，然后计算出以图像中每个像素为中心的圆形lbp值，
-     * 然后根据其二进制的01跳变次数来调整值，并统计直方图，最后归一化。
-     * 对于直方图的密度特征，求出其和然后除以图像面积。
-    */
+
     std::array<float_t, 8> modified_lbp = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // lbp直方图
-    float x[near_point_nums] = {0};
-    float y[near_point_nums] = {0};
+    // 将参数预先计算出来，进行查表
+    double x[near_point_nums] = {1, 0.707106781, 0, -0.707106781, -1, -0.707106781, 0, 0.707106781};
+    double y[near_point_nums] = {0, -0.707106781, -1, -0.707106781, 0, 0.707106781, 1, 0.707106781};
+    int fx[near_point_nums] = {1, 0, 0, -1, -1, -1, 0, 0};
+    int fy[near_point_nums] = {0, -1, -1, -1, 0, 0, 1, 0};
+    int cx[near_point_nums] = {1, 1, 0, 0, -1, 0, 0, 1};
+    int cy[near_point_nums] = {0, 0, -1, 0, 0, 1, 1, 1};
 
-    // 先计算出正余弦再查表
-    for (int i = 0; i<near_point_nums; i++)
-    {
-        x[i] = static_cast<float_t>(radius) * cos(2 * CV_PI *
-                                                  (i / static_cast<float_t>(near_point_nums)));
-        y[i] = static_cast<float_t>(radius) * -sin(2 * CV_PI *
-                                                   (i / static_cast<float_t>(near_point_nums)));
+    double tx[near_point_nums] = {0, 0.707106781, 0, 0.292893219, 0, 0.292893219, 0, 0.707106781};
+    double ty[near_point_nums] = {0, 0.292893219, 0, 0.292893219, 0, 0.707106781, 0, 0.707106781};
 
-    }
+    double w1[near_point_nums] = {1, 0.207106781, 1, 0.5, 1, 0.207106781, 1, 0.0857864377};
+    double w2[near_point_nums] = {0, 0.5, 0, 0.207106781, 0, 0.0857864377, 0, 0.207106781};
+    double w3[near_point_nums] = {0, 0.0857864377, 0, 0.207106781, 0, 0.5, 0, 0.207106781};
+    double w4[near_point_nums] = {0, 0.207106781, 0, 0.0857864377, 0, 0.207106781, 0, 0.5};
+
 
     for (int i = radius; i < block_img_gray_data.rows - radius; i++)
     {
@@ -207,39 +206,21 @@ void calculateModifiedLbp(const cv::Mat &block_img_gray_data,
             for (int n = 0; n < near_point_nums; n++)
             {
 
-                // 对x,y取整
-                int fx = static_cast<int>(floor(x[n])); // 对x向下取整
-                int fy = static_cast<int>(floor(y[n])); // 对y向下取整
-                int cx = static_cast<int>(ceil(x[n]));  // 对x向上取整
-                int cy = static_cast<int>(ceil(y[n]));  // 对y向上取整
-                // printf("%d,%d,%d,%d\n", fx,fy,cx,cy);
-
-                // 双线性插值参数
-                float_t tx = x[n] - fx;
-                float_t ty = y[n] - fy;
-                float_t w1 = (1 - tx) * (1 - ty); // 双线性插值的周围四个点的权重
-                float_t w2 = tx * (1 - ty);
-                float_t w3 = (1 - tx) * ty;
-                float_t w4 = tx * ty;
-
                 // 插值点值
-                float_t tmp = w1 * static_cast<float_t>(block_img_gray_data.at<uchar>(i + fx, j + fy)) +
-                              w2 * static_cast<float_t>(block_img_gray_data.at<uchar>(i + cx, j + fy)) +
-                              w3 * static_cast<float_t>(block_img_gray_data.at<uchar>(i + fx, j + cy)) +
-                              w4 * static_cast<float_t>(block_img_gray_data.at<uchar>(i + cx, j + cy));
+                float_t tmp = w1[n] * block_img_gray_data.at<uchar>(i + fx[n], j + fy[n]) +
+                              w2[n] * block_img_gray_data.at<uchar>(i + cx[n], j + fy[n]) +
+                              w3[n] * block_img_gray_data.at<uchar>(i + fx[n], j + cy[n]) +
+                              w4[n] * block_img_gray_data.at<uchar>(i + cx[n], j + cy[n]);
 
                 // 计算圆形lbp值
                 if (n == 0)
                 {
-                    last_bit_value = ((tmp > block_img_gray_data.at<uchar>(i, j)) &&
-                                      (abs(tmp - block_img_gray_data.at<uchar>(i, j)) > std::numeric_limits<float_t>::epsilon()));
+                    last_bit_value = (uint8_t)(tmp > block_img_gray_data.at<uchar>(i, j));
                 }
-                bit_value = ((tmp > block_img_gray_data.at<uchar>(i, j)) &&
-                             (abs(tmp - block_img_gray_data.at<uchar>(i, j)) > std::numeric_limits<float_t>::epsilon()));
-                if (bit_value != last_bit_value)
-                {
+                bit_value = (uint8_t)(tmp > block_img_gray_data.at<uchar>(i, j));
+                if (bit_value^last_bit_value)
                     hop_times++;
-                }
+
                 last_bit_value = bit_value;
                 tmp_lbp_value += bit_value << n;
 
@@ -289,7 +270,6 @@ void generateFeatureMap(const cv::Mat &input_image,
                         uint8_t window_size,
                         bool padding)
 {
-    // 特征向量维数: eoh + ed + mag + lbp + lbp_bit_density + iDensity + sDensity = 8+1+8+8+1+1+1 = 28
     if (!feature_image.empty())
         feature_image.clear();
 
@@ -314,14 +294,22 @@ void generateFeatureMap(const cv::Mat &input_image,
         out_ddepth = 0;
     }
     std::vector<float_t> eoh_res, mag_res, lbp_res; // 用于存储临时值的变量
+    eoh_res.reserve(9);
+    mag_res.reserve(8);
+    lbp_res.reserve(9);
+    cv::Mat gradientX, gradientY, Mag, Theta;
+    cv::Sobel(input_image, gradientX, CV_32F, 1, 0);
+    cv::Sobel(input_image, gradientY, CV_32F, 0, 1);
+    cv::cartToPolar(gradientX, gradientY, Mag, Theta, true);
 
-    for (int i = 0; i < input_image.cols - window_size; i += stride)
+    for (int i = 0; i < input_image.rows - window_size; i += stride)
     {
-        for (int j = 0; j < input_image.rows - window_size; j += stride)
+        for (int j = 0; j < input_image.cols - window_size; j += stride)
         {
-            calculateEohAndMag(input_image(cv::Range(j, j + window_size), cv::Range(i, i + window_size)),
+            calculateEohAndMag(Mag(cv::Range(i, i + window_size), cv::Range(j, j + window_size)),
+                                Theta(cv::Range(i, i + window_size), cv::Range(j, j + window_size)),
                                window_size * window_size, eoh_res, mag_res);
-            calculateModifiedLbp(input_image(cv::Range(j, j + window_size), cv::Range(i, i + window_size)),
+            calculateModifiedLbp(input_image(cv::Range(i, i + window_size), cv::Range(j, j + window_size)),
                                  window_size * window_size, lbp_res);
 
             if (i == 0 && j == 0) // run only once
@@ -344,6 +332,104 @@ void generateFeatureMap(const cv::Mat &input_image,
             mag_res.clear();
             lbp_res.clear();
         }
+    }
+}
+
+
+
+void featureMapThreadHandle(threadParams &param)
+{
+    std::vector<float_t> eoh_res, mag_res, lbp_res; // 用于存储临时值的变量
+    eoh_res.reserve(9);
+    mag_res.reserve(8);
+    lbp_res.reserve(9);
+   for (int i = 0; i < param.thread_image.rows - param.windowSize; i += param.stride)
+    {
+        for (int j = 0; j < param.thread_image.cols - param.windowSize; j += param.stride)
+        {
+            calculateEohAndMag(param.thread_Mag(cv::Range(i, i + param.windowSize), cv::Range(j, j + param.windowSize)),
+                                param.thread_Theta(cv::Range(i, i + param.windowSize), cv::Range(j, j + param.windowSize)),
+                               param.windowSize * param.windowSize, eoh_res, mag_res);
+            calculateModifiedLbp(param.thread_image(cv::Range(i, i + param.windowSize), cv::Range(j, j + param.windowSize)),
+                                 param.windowSize * param.windowSize, lbp_res);
+
+            for (std::vector<float_t>::const_iterator it = eoh_res.begin(); it < eoh_res.end(); ++it)
+            {
+                param.res.push_back(*it);
+            }
+            for (std::vector<float_t>::const_iterator it = mag_res.begin(); it < mag_res.end(); ++it)
+            {
+                param.res.push_back(*it);
+            }
+            for (std::vector<float_t>::const_iterator it = lbp_res.begin(); it < lbp_res.end(); ++it)
+            {
+                param.res.push_back(*it);
+            }
+            eoh_res.clear();
+            mag_res.clear();
+            lbp_res.clear();
+        }
+    }
+}
+
+void generatFeatureMapMultiThread(const cv::Mat &input_image,
+                                  std::vector<float_t> &feature_image,
+                                  uint16_t &out_cols,
+                                  uint16_t &out_rows,
+                                  uint8_t &out_ddepth,
+                                  uint8_t stride,
+                                  uint8_t window_size,
+                                  uint8_t thread_nums)
+{
+    int cols = input_image.cols;
+    int rows = input_image.rows;
+    out_cols = (cols - window_size) / stride;
+    out_rows = (rows - window_size) / stride;
+    out_ddepth = 26; // fixed value
+    int threadDeltaRows = rows / thread_nums;
+    assert(thread_nums <= 12);
+    threadParams params[thread_nums];
+
+    cv::Mat gradientX, gradientY, Mag, Theta;
+    cv::Sobel(input_image, gradientX, CV_32F, 1, 0);
+    cv::Sobel(input_image, gradientY, CV_32F, 0, 1);
+    cv::cartToPolar(gradientX, gradientY, Mag, Theta, true);
+
+    for (int i = 0; i < thread_nums; i++)
+    {
+        threadParams p;
+        p.thread_id = i + 1;
+        p.thread_nums = thread_nums;
+        int startIndex = i * threadDeltaRows;
+        int endIndex = ((i == thread_nums - 1) ? ((i+1) * threadDeltaRows) : ((i + 1) * threadDeltaRows + window_size));
+        p.thread_image = input_image(cv::Range(startIndex, endIndex), cv::Range::all());
+        p.thread_Mag = Mag(cv::Range(startIndex, endIndex), cv::Range::all());
+        p.thread_Theta = Theta(cv::Range(startIndex, endIndex), cv::Range::all());
+        p.windowSize = window_size;
+        p.stride = stride;
+        params[i] = p;
+    }
+
+    // 创建线程
+    std::thread threads[thread_nums];
+    for (uint8_t i = 0; i < thread_nums; i++)
+    {
+        threads[i] = std::thread(featureMapThreadHandle, std::ref(params[i]));
+
+    }
+    // join thread
+    for (auto& s:threads)
+    {
+        s.join();
+    }
+    size_t total = out_ddepth * out_cols * out_rows;
+    feature_image.reserve(total);
+
+    // move result
+    for (auto &p:params)
+    {
+        assert(!p.res.empty());
+        feature_image.insert(feature_image.end(), p.res.begin(), p.res.end());
     }
 }
 

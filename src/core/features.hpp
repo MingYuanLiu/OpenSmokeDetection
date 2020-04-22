@@ -15,6 +15,7 @@
 #include <math.h>
 #include <vector>
 #include <array>
+#include <thread>
 #include <sys/time.h>
 
 namespace smoke_adaboost{
@@ -44,7 +45,7 @@ namespace smoke_adaboost{
 //      对于mag直方图特征的计算，找到mag中最大值的一半m_max，然后将幅值除以m_max / mag_bin,并取整
 //      最后统计每个bin值出现的次数。
 //
-void calculateEohAndMag(const cv::Mat &block_img_gray_data, uint16_t block_img_area,
+void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta, uint16_t block_img_area,
                         std::vector<float_t>& eoh_histogram,std::vector<float_t>& mag_histogram,uint8_t eoh_bin=8,
                         uint8_t mag_bin=8);
 
@@ -79,13 +80,34 @@ void calculateModifiedLbp(const cv::Mat &block_img_gray_data, uint16_t block_img
 //      padding: 是否用0填充原图使特征图像与原图大小相等
 //      
 // Usage:
-//      传入一张灰度图片，产生out_rows * out_cols * 26的一维特征向量
+//      传入一张灰度图片，产生 26 * out_cols * out_rows 的一维特征向量
 //      adaboost::generateFeatureMap(cv.mat, feature_map, )
 //     
 void generateFeatureMap(const cv::Mat &input_image, std::vector<float_t> &feature_image, uint16_t& out_cols,
                         uint16_t& out_rows, uint8_t& out_ddepth,  uint8_t stride=2, uint8_t window_size=8, bool padding=false);
 
 
-}
+// 多线程函数参数
+struct threadParams
+{
+    uint8_t thread_id;
+    uint8_t thread_nums;
+    uint8_t windowSize;
+    uint8_t stride;
+    cv::Mat thread_image;
+    cv::Mat thread_gradX;
+    cv::Mat thread_gradY;
+    cv::Mat thread_Mag;
+    cv::Mat thread_Theta;
+    std::vector<float> res;
+};
+
+// 计算特征图像的多线程版本
+void generatFeatureMapMultiThread(const cv::Mat &input_image, std::vector<float_t> &feature_image,
+                                  uint16_t &out_cols, uint16_t &out_rows, uint8_t &out_ddepth,
+                                  uint8_t stride, uint8_t window_size, uint8_t thread_nums);
+
+} // namespace smoke_adaboost
+
 
 #endif

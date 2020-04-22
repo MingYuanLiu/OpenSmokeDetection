@@ -129,6 +129,7 @@ private:
   std::vector<uint8_t> ring_cut_interval;
   inline void initRingCutInterval() 
   {for (int i=3;i< 3+ringed_block_cut_times;i++) ring_cut_interval.emplace_back(i);}
+  
 };
 
 } // namespace smoke_adaboost

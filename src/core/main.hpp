@@ -9,10 +9,9 @@
 #include "detector.hpp"
 #include "statistical_features.hpp"
 #include "cv_dtree_header.hpp"
+#include <stdlib.h>
+#include <sys/stat.h>
 
-//
-//
-//
-
+        
 
 #endif

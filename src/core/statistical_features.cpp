@@ -9,12 +9,12 @@ IntegralImage::IntegralImage(const std::vector<float_t> &_feature_image,
                              uint16_t _rows,
                              uint8_t _ddepth)
 {
-  integral_feature_image = new float_t* [_ddepth]();
+  integral_feature_image = new float_t *[_ddepth]();
   for (int i = 0; i < _ddepth; ++i)
   {
     integral_feature_image[i] = new float_t[(_cols + 1) * (_rows + 1)]();
   }
-  cols = _cols + 1;  // 此处为积分图像的cols
+  cols = _cols + 1; // 此处为积分图像的cols
   rows = _rows + 1;
   ddepth = _ddepth;
   buildIntegralImage(_feature_image, _cols, _rows, _ddepth);
@@ -37,8 +37,8 @@ void IntegralImage::buildIntegralImage(const std::vector<float_t> &_feature_imag
                                        uint16_t _rows,
                                        uint8_t _ddepth)
 {
-  int index = (_cols + 1) * _ddepth;                                  // 积分特征图像的坐标索引，跳过第一行留白；因为积分图像的第一行和第一列均为0
-  float_t *sum = new float_t[_ddepth]();                             // 每一行的求和
+  int index = (_cols + 1) * _ddepth;     // 积分特征图像的坐标索引，跳过第一行留白；因为积分图像的第一行和第一列均为0
+  float_t *sum = new float_t[_ddepth](); // 每一行的求和
   for (std::vector<float_t>::const_iterator it = _feature_image.begin(); it < _feature_image.end(); ++it)
   {
     if ((index / _ddepth) % (_cols + 1) == 0)
@@ -51,7 +51,7 @@ void IntegralImage::buildIntegralImage(const std::vector<float_t> &_feature_imag
     }
     sum[index % _ddepth] += *it;
     integral_feature_image[index % _ddepth][index / _ddepth] = integral_feature_image[index % _ddepth][index / _ddepth - _cols - 1] +
-                                                              sum[index % _ddepth];
+                                                               sum[index % _ddepth];
     index++;
   }
 }
@@ -63,10 +63,14 @@ void IntegralImage::getIntegralData(uint16_t x0, uint16_t y0,
 {
   float_t tmp_integral_data;
   // handle range of input
-  x0=CLIP_UP(x0, rows-1); x0=CLIP_DOWN(x0, 0);
-  x1=CLIP_UP(x1, rows-1); x1=CLIP_DOWN(x1, 0);
-  y0=CLIP_UP(y0, cols-1); y0=CLIP_DOWN(y0, 0);
-  y1=CLIP_UP(y1, cols-1); y1=CLIP_DOWN(y1, 0);
+  x0 = CLIP_UP(x0, rows - 1);
+  x0 = CLIP_DOWN(x0, 0);
+  x1 = CLIP_UP(x1, rows - 1);
+  x1 = CLIP_DOWN(x1, 0);
+  y0 = CLIP_UP(y0, cols - 1);
+  y0 = CLIP_DOWN(y0, 0);
+  y1 = CLIP_UP(y1, cols - 1);
+  y1 = CLIP_DOWN(y1, 0);
 
   for (int i = 0; i < this->ddepth; ++i)
   {
@@ -133,19 +137,19 @@ BlocksAndStatisticalFeatures::~BlocksAndStatisticalFeatures()
 }
 
 // 计算均值、方差、峭度、歪斜度统计量
-void BlocksAndStatisticalFeatures::getStatisticalFeatures(std::vector<float_t>& features_vector)
+void BlocksAndStatisticalFeatures::getStatisticalFeatures(std::vector<float_t> &features_vector)
 {
   if (!features_vector.empty())
   {
     features_vector.clear();
   }
 
-  cv::Ptr<float_t> tmp_integral_data = new float_t[feature_image_ddepth]();
-  cv::Ptr<float_t> tmp_variance_data = new float_t[feature_image_ddepth]();
-  cv::Ptr<float_t> tmp_skewness_data = new float_t[feature_image_ddepth]();
-  cv::Ptr<float_t> tmp_kurtosis_data = new float_t[feature_image_ddepth]();
-  cv::Ptr<float_t> tmp_mean_data = new float_t[feature_image_ddepth]();
-  cv::Ptr<float_t> tmp_sum_data = new float_t[feature_image_ddepth]();
+  float tmp_integral_data[feature_image_ddepth] = {0.0};
+  float tmp_variance_data[feature_image_ddepth] = {0.0};
+  float tmp_skewness_data[feature_image_ddepth] = {0.0};
+  float tmp_kurtosis_data[feature_image_ddepth] = {0.0};
+  float tmp_mean_data[feature_image_ddepth] = {0.0};
+  float tmp_sum_data[feature_image_ddepth] = {0.0};
 
   // 获取整个特征图像的和
   integral_image->getIntegralData(0, 0, feature_image_cols, feature_image_rows, tmp_sum_data);
@@ -157,34 +161,34 @@ void BlocksAndStatisticalFeatures::getStatisticalFeatures(std::vector<float_t>& 
   int delta_rows = 0;
   for (int row_num = 2; row_num < range_numbers + 2; ++row_num) // 列切割个数
   {
-    delta_rows = cvRound((float)feature_image_rows / row_num); // 每行的切割间隔
+    delta_rows = cvRound((float)feature_image_rows / row_num);    // 每行的切割间隔
     for (int col_num = 2; col_num < range_numbers + 1; ++col_num) // 行切割个数
     {
-      int block_nums = col_num * row_num;                    // 总切割个数
+      int block_nums = col_num * row_num;                        // 总切割个数
       delta_cols = cvRound((float)feature_image_cols / col_num); // 每列的切割间隔
       for (int i = 0; i < feature_image_ddepth; ++i)
       {
-        tmp_mean_data[i] = tmp_sum_data[i] /  block_nums; // 获得均值
+        tmp_mean_data[i] = tmp_sum_data[i] / block_nums; // 获得均值
       }
 
       for (int i = 0; i < row_num; ++i)
       {
         for (int j = 0; j < col_num; ++j)
         {
-          integral_image->getIntegralData(j * delta_cols, i * delta_rows, (j + 1) * delta_cols, (i+1) * delta_rows, tmp_integral_data);
+          integral_image->getIntegralData(j * delta_cols, i * delta_rows, (j + 1) * delta_cols, (i + 1) * delta_rows, tmp_integral_data);
           for (int i = 0; i < feature_image_ddepth; ++i) // 计算方差、斜度、歪斜率的分子部分求和
           {
-            tmp_variance_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 2);
-            tmp_skewness_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 3);
-            tmp_kurtosis_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 4);
+            tmp_variance_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 2);
+            tmp_skewness_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 3);
+            tmp_kurtosis_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 4);
           }
         }
       }
       for (int i = 0; i < this->feature_image_ddepth; ++i) // 计算方差、斜度、歪斜率
       {
         tmp_variance_data[i] /= block_nums;
-        tmp_skewness_data[i] = (tmp_skewness_data[i] / block_nums) / (pow(tmp_variance_data[i], 1.5) + std::numeric_limits<float_t>::epsilon());
-        tmp_kurtosis_data[i] = (tmp_kurtosis_data[i] / block_nums) / (pow(tmp_variance_data[i], 2) + std::numeric_limits<float_t>::epsilon());
+        tmp_skewness_data[i] = (tmp_skewness_data[i] / block_nums) / (powf(tmp_variance_data[i], 1.5) + std::numeric_limits<float_t>::epsilon());
+        tmp_kurtosis_data[i] = (tmp_kurtosis_data[i] / block_nums) / (powf(tmp_variance_data[i], 2) + std::numeric_limits<float_t>::epsilon());
         features_vector.push_back(tmp_mean_data[i]);
         features_vector.push_back(tmp_variance_data[i]);
         features_vector.push_back(tmp_skewness_data[i]);
@@ -195,13 +199,17 @@ void BlocksAndStatisticalFeatures::getStatisticalFeatures(std::vector<float_t>& 
 
   // 环绕分割部分
   // 以不同的环绕宽度环绕切割特征图像，在分割块的基础上求取统计量均值、方差、歪斜率、峭度
-  
-  cv::Ptr<float_t> last_ring_integral_data = new float_t[feature_image_ddepth]();
+
+  // float* last_ring_integral_data = new float_t[feature_image_ddepth]();
+  float last_ring_integral_data[feature_image_ddepth] = {0.0};
   float block_nums = 0;
 
   for (std::vector<uint8_t>::const_iterator it = ring_cut_interval.begin(); it < ring_cut_interval.end(); ++it)
   {
     block_nums = floor(feature_image_cols / *it);
+    if (block_nums == 0)
+      break;
+
     for (int i = 0; i < feature_image_ddepth; ++i)
     {
       tmp_mean_data[i] = tmp_sum_data[i] / block_nums;
@@ -224,30 +232,22 @@ void BlocksAndStatisticalFeatures::getStatisticalFeatures(std::vector<float_t>& 
       }
       for (uint8_t i = 0; i < feature_image_ddepth; ++i) // 对方差、斜度、歪斜率的分子部分求和
       {
-        tmp_variance_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 2);
-        tmp_skewness_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 3);
-        tmp_kurtosis_data[i] += pow((tmp_integral_data[i] - tmp_mean_data[i]), 4);
+        tmp_variance_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 2);
+        tmp_skewness_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 3);
+        tmp_kurtosis_data[i] += powf((tmp_integral_data[i] - tmp_mean_data[i]), 4);
       }
     }
     for (int i = 0; i < this->feature_image_ddepth; ++i) // 计算方差、斜度、歪斜率
     {
       tmp_variance_data[i] /= block_nums;
-      tmp_skewness_data[i] = (tmp_skewness_data[i] / block_nums) / (pow(tmp_variance_data[i], 1.5) + std::numeric_limits<float_t>::epsilon());
-      tmp_kurtosis_data[i] = (tmp_kurtosis_data[i] / block_nums) / (pow(tmp_variance_data[i], 2) + std::numeric_limits<float_t>::epsilon());
+      tmp_skewness_data[i] = (tmp_skewness_data[i] / block_nums) / (powf(tmp_variance_data[i], 1.5) + std::numeric_limits<float_t>::epsilon());
+      tmp_kurtosis_data[i] = (tmp_kurtosis_data[i] / block_nums) / (powf(tmp_variance_data[i], 2) + std::numeric_limits<float_t>::epsilon());
       features_vector.emplace_back(tmp_mean_data[i]);
       features_vector.emplace_back(tmp_variance_data[i]);
       features_vector.emplace_back(tmp_skewness_data[i]);
       features_vector.emplace_back(tmp_kurtosis_data[i]);
     }
   }
-
-  tmp_integral_data.release();
-  tmp_mean_data.release();
-  tmp_variance_data.release();
-  tmp_skewness_data.release();
-  tmp_kurtosis_data.release();
-  tmp_sum_data.release();
-  last_ring_integral_data.release();
 }
 
 template <typename T>
@@ -259,4 +259,4 @@ void BlocksAndStatisticalFeatures::deepCopyPtr(T *input, T *output, int nums)
   }
 }
 
-} // namespace adaboost
+} // namespace smoke_adaboost

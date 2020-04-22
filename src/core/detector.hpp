@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <mutex>
 
 using std::string;
 using std::vector;
@@ -28,7 +29,8 @@ public:
         string videoPath;
         string imagePath;
         int detectorModal;
-        vector<int> detWindowSize;
+        uint8_t threadNums;
+        vector<uint16_t> detWindowSize;
     };
     struct predictRes
     {
@@ -46,7 +48,8 @@ public:
     void detectVideo(const string& _videoPath, const string& _modelPath);
     void detectVideoRaw(const string& _videoPath, const string& _modelPath);
     void detectImage(const string& _imagePath, const string& _modelPath);
-    void drawResult(Mat& frame);
+    void detectImageRaw(const string &_imagePath, const string &_modelPath);
+    void drawResult(Mat &frame);
 
 private:
     detectorParams param;
