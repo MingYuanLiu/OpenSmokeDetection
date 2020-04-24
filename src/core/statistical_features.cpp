@@ -38,7 +38,7 @@ void IntegralImage::buildIntegralImage(const std::vector<float_t> &_feature_imag
                                        uint8_t _ddepth)
 {
   int index = (_cols + 1) * _ddepth;     // 积分特征图像的坐标索引，跳过第一行留白；因为积分图像的第一行和第一列均为0
-  float_t *sum = new float_t[_ddepth](); // 每一行的求和
+  float sum[_ddepth] = {0.0};
   for (std::vector<float_t>::const_iterator it = _feature_image.begin(); it < _feature_image.end(); ++it)
   {
     if ((index / _ddepth) % (_cols + 1) == 0)
