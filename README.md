@@ -1,7 +1,7 @@
 # OpenSmokeDet
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDet/blob/master/data/res2.png)
-![(https://github.com/MingYuanLiu/OpenSmokeDet/blob/master/data/result.png)]
+![](https://github.com/MingYuanLiu/OpenSmokeDet/blob/master/data/result.png)
 
 ## Introduction 
 
