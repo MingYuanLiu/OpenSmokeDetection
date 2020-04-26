@@ -67,6 +67,7 @@ cmake .. && make
 ```
 5. run the detection system `./smokeAdaboost detetcion`
 > note: you can change the parameters according to the code comment in main.cpp
+> if you want to get my dataset, please contact me by mail: myliu327@zju.edu.cn. 
 
 ## TODO
 
