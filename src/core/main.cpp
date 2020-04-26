@@ -5,7 +5,7 @@ using smoke_adaboost::smokeCascadeDetector;
 using std::string;
 
 // work path
-const std::string WORK_HOME = "/Users/mac/Desktop/摄像头烟雾检测/代码/cpp_adaboost/";
+// const std::string WORK_HOME = "/Users/mac/Desktop/摄像头烟雾检测/代码/cpp_adaboost/";
 
 // function declaration
 void trainModel(const string &datasetAnnotationFile, const string &saveFeaturesPath,
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
         param.modelPath = saveModelPath; 
         vector<uint16_t> w = {50}; // 检测窗口大小，默认为50pixel
         param.detWindowSize = w; 
-        param.threadNums = 8; // 线程数，默认为8；可调，但建议为2的倍数
-        param.detectorModal = smoke_adaboost::Detector::VIDEO; // 选择检测模式，图片 or 视频
+        param.threadNums = 4; // 线程数，默认为4；可调，但建议为2的倍数
+        param.detectorModal = smoke_adaboost::Detector::VIDEO; // 选择检测模式，图片(IMAGE) or 视频(VIDEO)
         detetction(param);
     }
     else
