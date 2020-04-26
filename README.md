@@ -29,7 +29,7 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
    the dataset directory must like this: 
    dataset
 
-            		- smoke
+      - smoke
 
       - non
 
