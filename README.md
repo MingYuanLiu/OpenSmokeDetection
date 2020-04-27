@@ -20,26 +20,31 @@ Download the source code.
 git clone https://github.com/MingYuanLiu/OpenSmokeDet
 ```
 ### Training
-1. Generate annotation file from dataset using src/util/writeAnnotation.py. 
+  1. Generate annotation file from dataset using src/util/writeAnnotation.py. 
    ```bash
    cd src/util
    python writeAnnotation.py -dir your-dataset-directory -- annotation filename.txt
    ```
-   the dataset directory must like this: 
-   dataset
+   
+  the dataset structure should be like this: 
+   ```
+   dataset/
+      - non/
+        - *.jpg
+        - ...
 
-            		- smoke
+      - smoke/
+        - *.jpg
+        - ...
+   ```
+  the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
 
-      - non
-
-          the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
-
-  1. Get into src/core/main.cpp, and modify the training parameters, including:
+  2. Get into src/core/main.cpp, and modify the training parameters, including:
       1) annotationFiles -- the annotation file path last step generating; 
       2) saveFeaturesPath -- the save path of features.  if it exits, the system will directly read from this file,  but if not , it will calculate the feature from the images which are recorded  in the annotaion file. 
       3) other model parameters, details in code comments.
 
-  2. make new build directory, and run
+  3. make new build directory, and run
 	```bash
 	mkdir build && cd build && cmake .. && make
 	```
