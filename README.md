@@ -1,6 +1,7 @@
 # OpenSmokeDet
 
-![](/home/myliu/图片/result.png)
+![](https://github.com/MingYuanLiu/OpenSmokeDet/blob/master/data/res2.png)
+![](https://github.com/MingYuanLiu/OpenSmokeDet/blob/master/data/result.png)
 
 ## Introduction 
 
@@ -24,8 +25,7 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
    ```bash
    cd src/util
    python writeAnnotation.py -dir your-dataset-directory -- annotation filename.txt
-   ```
-   
+   ```   
   the dataset structure should be like this: 
    ```
    dataset/
@@ -38,7 +38,6 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
         - ...
    ```
   the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
-
   2. Get into src/core/main.cpp, and modify the training parameters, including:
       1) annotationFiles -- the annotation file path last step generating; 
       2) saveFeaturesPath -- the save path of features.  if it exits, the system will directly read from this file,  but if not , it will calculate the feature from the images which are recorded  in the annotaion file. 
@@ -48,7 +47,6 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
 	```bash
 	mkdir build && cd build && cmake .. && make
 	```
-	
   4.  run training mode, the suffix offeatures file and  model file is .yaml
 	```bash
 	./smokeAdaboost train
@@ -71,6 +69,7 @@ cmake .. && make
 ```
 5. run the detection system `./smokeAdaboost detetcion`
 > note: you can change the parameters according to the code comment in main.cpp
+> if you want to get my dataset, please contact me by mail: myliu327@zju.edu.cn. 
 
 ## TODO
 
