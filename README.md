@@ -38,16 +38,16 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
         - ...
    ```
   the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
-  2. Get into src/core/main.cpp, and modify the training parameters, including:
+2. Get into src/core/main.cpp, and modify the training parameters, including:
       1) annotationFiles -- the annotation file path last step generating; 
       2) saveFeaturesPath -- the save path of features.  if it exits, the system will directly read from this file,  but if not , it will calculate the feature from the images which are recorded  in the annotaion file. 
       3) other model parameters, details in code comments.
 
-  3. make new build directory, and run
+3. make new build directory, and run
 	```bash
 	mkdir build && cd build && cmake .. && make
 	```
-  4.  run training mode, the suffix offeatures file and  model file is .yaml
+4.  run training mode, the suffix offeatures file and  model file is .yaml
 	```bash
 	./smokeAdaboost train
 	```
