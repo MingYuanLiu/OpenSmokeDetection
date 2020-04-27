@@ -37,7 +37,7 @@ git clone https://github.com/MingYuanLiu/OpenSmokeDet
         - *.jpg
         - ...
    ```
-  the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
+    the directory must contains two subdirectory naming non and smoke, the 'non' subdirectory contains the negative samples and the 'smoke' subdirectory contains the positive samples. 
 2. Get into src/core/main.cpp, and modify the training parameters, including:
       1) annotationFiles -- the annotation file path last step generating; 
       2) saveFeaturesPath -- the save path of features.  if it exits, the system will directly read from this file,  but if not , it will calculate the feature from the images which are recorded  in the annotaion file. 
