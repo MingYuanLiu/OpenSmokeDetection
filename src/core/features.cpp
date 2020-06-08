@@ -42,7 +42,7 @@ void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
     //      theta_img_cols *= theta_img_rows;
     //     theta_img_rows = 1;
     // }
-
+    // 角度值分量
     double bin_theta[9] = {0.0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180};
 
     for (int i = 0; i < theta_img_rows; i++)
@@ -62,7 +62,7 @@ void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
                 theta <= bin_theta[1])
             {
                 // eoh_[0] += *mag_img_data_ptr;
-                eoh_[0] += Mag.at<float>(i,j);
+                eoh_[0] += Mag.at<float>(i,j); // mag存储内存不连续
             }
             else if (theta > bin_theta[1] &&
                      theta <= bin_theta[2])
@@ -105,7 +105,7 @@ void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
                      theta <= bin_theta[8])
             {
                 // eoh_[7] += *mag_img_data_ptr;
-                eoh_[7] += Mag.at<float>(i,j);
+                eoh_[7] += Mag.at<float>(i,j); 
             }
             // mag计算部分
             uint16_t mq = uint16_t(Mag.at<float>(i,j) / (m_max / mag_bin)) > mag_bin - 1 ? mag_bin - 1 : uint16_t(Mag.at<float>(i,j) / (m_max / mag_bin));
@@ -179,16 +179,25 @@ void calculateModifiedLbp(const cv::Mat &block_img_gray_data,
 
     std::array<float_t, 8> modified_lbp = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // lbp直方图
     // 将参数预先计算出来，进行查表
+    // N=near_point_nums
+    // x = sin(2*pi*(n/N))
+    // y = cos(2*pi*(n/N))
     double x[near_point_nums] = {1, 0.707106781, 0, -0.707106781, -1, -0.707106781, 0, 0.707106781};
     double y[near_point_nums] = {0, -0.707106781, -1, -0.707106781, 0, 0.707106781, 1, 0.707106781};
+    // fx, fy = floor(x), floor(y)
     int fx[near_point_nums] = {1, 0, 0, -1, -1, -1, 0, 0};
     int fy[near_point_nums] = {0, -1, -1, -1, 0, 0, 1, 0};
+    // cx, cy = ceil(x), ceil(y)
     int cx[near_point_nums] = {1, 1, 0, 0, -1, 0, 0, 1};
     int cy[near_point_nums] = {0, 0, -1, 0, 0, 1, 1, 1};
-
+    // tx = x - fx
+    // ty = y - fy
     double tx[near_point_nums] = {0, 0.707106781, 0, 0.292893219, 0, 0.292893219, 0, 0.707106781};
     double ty[near_point_nums] = {0, 0.292893219, 0, 0.292893219, 0, 0.707106781, 0, 0.707106781};
-
+    // w1 = (1-tx)*(1-ty)
+    // w2 = tx*(1-ty)
+    // w3 = (1-tx)*ty
+    // w4 = tx*ty
     double w1[near_point_nums] = {1, 0.207106781, 1, 0.5, 1, 0.207106781, 1, 0.0857864377};
     double w2[near_point_nums] = {0, 0.5, 0, 0.207106781, 0, 0.0857864377, 0, 0.207106781};
     double w3[near_point_nums] = {0, 0.0857864377, 0, 0.207106781, 0, 0.5, 0, 0.207106781};
@@ -312,7 +321,7 @@ void generateFeatureMap(const cv::Mat &input_image,
             calculateModifiedLbp(input_image(cv::Range(i, i + window_size), cv::Range(j, j + window_size)),
                                  window_size * window_size, lbp_res);
 
-            if (i == 0 && j == 0) // run only once
+            if (i == 0 && j == 0) // cal only once
             {
                 out_ddepth = eoh_res.size() + lbp_res.size() + mag_res.size();
             }
@@ -395,6 +404,7 @@ void generatFeatureMapMultiThread(const cv::Mat &input_image,
     cv::Sobel(input_image, gradientY, CV_32F, 0, 1);
     cv::cartToPolar(gradientX, gradientY, Mag, Theta, true);
 
+    // 设置线程参数
     for (int i = 0; i < thread_nums; i++)
     {
         threadParams p;
@@ -403,7 +413,7 @@ void generatFeatureMapMultiThread(const cv::Mat &input_image,
         int startIndex = i * threadDeltaRows;
         int endIndex = ((i == thread_nums - 1) ? ((i+1) * threadDeltaRows) : ((i + 1) * threadDeltaRows + window_size));
         p.thread_image = input_image(cv::Range(startIndex, endIndex), cv::Range::all());
-        p.thread_Mag = Mag(cv::Range(startIndex, endIndex), cv::Range::all());
+        p.thread_Mag = Mag(cv::Range(startIndex, endIndex), cv::Range::all());   // TODO:内存访问不连续
         p.thread_Theta = Theta(cv::Range(startIndex, endIndex), cv::Range::all());
         p.windowSize = window_size;
         p.stride = stride;
@@ -415,7 +425,6 @@ void generatFeatureMapMultiThread(const cv::Mat &input_image,
     for (uint8_t i = 0; i < thread_nums; i++)
     {
         threads[i] = std::thread(featureMapThreadHandle, std::ref(params[i]));
-
     }
     // join thread
     for (auto& s:threads)
@@ -429,7 +438,7 @@ void generatFeatureMapMultiThread(const cv::Mat &input_image,
     for (auto &p:params)
     {
         assert(!p.res.empty());
-        feature_image.insert(feature_image.end(), p.res.begin(), p.res.end());
+        feature_image.insert(feature_image.end(), p.res.begin(), p.res.end());  // TODO:用右值完成数据的移动
     }
 }
 

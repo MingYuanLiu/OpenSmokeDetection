@@ -103,6 +103,7 @@ struct threadParams
 };
 
 // 计算特征图像的多线程版本
+// 相对于单线程版本只多了一个线程数 `thread_nums`变量，用于设置运行线程数
 void generatFeatureMapMultiThread(const cv::Mat &input_image, std::vector<float_t> &feature_image,
                                   uint16_t &out_cols, uint16_t &out_rows, uint8_t &out_ddepth,
                                   uint8_t stride, uint8_t window_size, uint8_t thread_nums);

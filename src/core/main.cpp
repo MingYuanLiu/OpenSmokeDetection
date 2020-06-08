@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     {
 
         std::string saveModelPath = "model-0.05373.yaml"; // 模型保存路径
-        std::string videoPath = "21.mpg"; // 视频文件
+        std::string videoPath = "Basketball_yard.avi"; // 视频文件
         std::string imagePath = "51.jpg"; // 图像文件
         smoke_adaboost::Detector::detectorParams param; // 检测参数
         param.videoPath = videoPath;
@@ -116,6 +116,7 @@ void trainModel(const string &datasetAnnotationFile,
     }
     else
     {
+        std::cout << "Features file has existed. reading... \n";
         dataset.readFeaturesFromFile(saveFeaturesPath);
     }
     cv::Ptr<cv::ml::TrainData> Data = dataset.getTrainData();

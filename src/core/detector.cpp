@@ -75,7 +75,7 @@ void Detector::detectVideo(const string &_videoPath, const string &_modelPath)
         if (deltaRows <= 0)
         {
             std::cout << "---- \n Thread numbers must be less than rows of detection sliding window. " << std::endl;
-            std::cout << "Force deltaRows to be one. " << std::endl;
+            std::cout << "Force threadNums to be rows of detection window. " << std::endl;
             deltaRows = 1;
         }
         std::thread predictThreads[threadNums];
@@ -87,11 +87,7 @@ void Detector::detectVideo(const string &_videoPath, const string &_modelPath)
             int rowStart = t * deltaRows;
             int rowEnd = (t + 1) * deltaRows;
             // 使用匿名函数创建线程，方便利用上下文环境
-            predictThreads[t] = std::thread([&featureMap, &cls, &tmpRes, &result_lock, t, deltaRows,
-                                             rowStart, rowEnd, colsNum,
-                                             detWindowSizeOnFeatureMap, detSrtideOnFeatureMap,
-                                             featureMapCols, featureMapRows, featureMapDepth,
-                                             tiledCutNums, ringedCutNums] {
+            predictThreads[t] = std::thread([=, &featureMap, &cls, &tmpRes, &result_lock] {
                 size_t total = detWindowSizeOnFeatureMap * detWindowSizeOnFeatureMap * featureMapDepth;
                 vector<float> tmpStatisticalFeature;
                 tmpStatisticalFeature.reserve((tiledCutNums + ringedCutNums) * featureMapDepth * 4);
@@ -381,11 +377,7 @@ void Detector::detectImage(const string &_imagePath, const string &_modelPath)
     {
         int rowStart = t * deltaRows;
         int rowEnd = (t + 1) * deltaRows;
-        predictThreads[t] = std::thread([&featureMap, &cls, &tmpRes, &result_lock, t, deltaRows,
-                                         rowStart, rowEnd, colsNum,
-                                         detWindowSizeOnFeatureMap, detSrtideOnFeatureMap,
-                                         featureMapCols, featureMapRows, featureMapDepth,
-                                         tiledCutNums, ringedCutNums] {
+        predictThreads[t] = std::thread([=, &featureMap, &cls, &tmpRes, &result_lock] {
             size_t total = detWindowSizeOnFeatureMap * detWindowSizeOnFeatureMap * featureMapDepth;
             vector<float> tmpStatisticalFeature;
             tmpStatisticalFeature.reserve((tiledCutNums + ringedCutNums) * featureMapDepth * 4);

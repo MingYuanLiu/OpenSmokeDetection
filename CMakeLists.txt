@@ -14,5 +14,5 @@ include_directories(${CMAKE_INCLUDE_PATH})
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/core DIR_LIB_SRCS)
 add_executable(smokeAdaboost ${DIR_LIB_SRCS})
-
 target_link_libraries(smokeAdaboost LINK_PRIVATE ${OpenCV_LIBS})
+
