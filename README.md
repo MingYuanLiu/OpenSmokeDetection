@@ -18,7 +18,7 @@ A real time video smoke detection system. It firstly generates feature map from 
 Download the source code. 
 
 ```bash
-git clone https://github.com/MingYuanLiu/OpenSmokeDet
+git clone https://github.com/MingYuanLiu/OpenSmokeDetection
 ```
 ### Training
   1. Generate annotation file from dataset using src/util/writeAnnotation.py. 
