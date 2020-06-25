@@ -55,7 +55,7 @@ Use trained model to detect video or image.
 I provide a trained detection model which is in the model directory.
 This model is trained by more than 30,000 pictures, and the positive sample ratio is 1/3.
 
-1. Get into main.cpp, and modify the parameter ['saveModelPath']() into your model path last step training. 
+1. Get into main.cpp, and modify the parameter ['saveModelPath']() to your model path last step training. 
 2. Change the video file path or image file path. 
 3. Change the ['param.detectorMode']() according to your detection mode(VIDEO or IMAGE)
 4. compile and run: `cd build && make`; if you want to use the model provided, you should run:
