@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 # OpenSmokeDetection:  A real-time smoke detector
 # OpenSmokeDetetction
-[toc]
-
+[TOC]
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/res2.png)
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/result.png)
