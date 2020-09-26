@@ -1,10 +1,13 @@
+<<<<<<< HEAD
 # OpenSmokeDetection:  A real-time smoke detector
-
+# OpenSmokeDetetction
 [toc]
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/res2.png)
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/result.png)
+
+[English](README_en.md)
 
 OpenSmokeDetction是一个实时检测烟雾的算法；算法核心思想是使用梯度直方图和局部二进制模式特征 + adaboost提升算法对烟雾图片进行识别分类，区分出有烟和无烟。
 
@@ -26,9 +29,7 @@ OpenSmokeDetction是一个实时检测烟雾的算法；算法核心思想是使
 ```bash
 git clone https://github.com/MingYuanLiu/OpenSmokeDetection
 ```
-
 ### 编译
-
 ```bash
 mkdir build
 cmake .. && make -j4 && make install
