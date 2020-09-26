@@ -3,6 +3,7 @@
 namespace smoke_adaboost
 {
 // 计算eoh和mag特征
+//
 void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
                         uint16_t block_img_area,
                         std::vector<float_t> &eoh_histogram,
@@ -167,6 +168,7 @@ void calculateEohAndMag(const cv::Mat &Mag, const cv::Mat &Theta,
 
 
 // 计算lbp(局部二进制模式)特征
+//
 void calculateModifiedLbp(const cv::Mat &block_img_gray_data,
                           uint16_t block_img_area,
                           std::vector<float_t> &lbp,
@@ -345,7 +347,8 @@ void generateFeatureMap(const cv::Mat &input_image,
 }
 
 
-
+// 线程处理函数
+//
 void featureMapThreadHandle(threadParams &param)
 {
     std::vector<float_t> eoh_res, mag_res, lbp_res; // 用于存储临时值的变量

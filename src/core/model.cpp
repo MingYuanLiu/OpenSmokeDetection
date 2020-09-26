@@ -78,18 +78,18 @@ void smokeFeatureGenerator::runGenerator()
         sampleImage = imread(samples[i].filePath);
         CV_Assert(!sampleImage.empty());
         cvtColor(sampleImage, sampleGrayImage, CV_BGR2GRAY);
-        // debug
-        // Mat resizedImage;
-        // resize(sampleGrayImage, resizedImage, Size(101,99));  // resize image to fixed size
+            // debug
+            // Mat resizedImage;
+            // resize(sampleGrayImage, resizedImage, Size(101,99));  // resize image to fixed size
         CV_Assert(sampleGrayImage.channels() == 1);
         generateFeatureMap(sampleGrayImage, tmpFeaturesMap, fmParam.cols,
                            fmParam.rows, fmParam.ddepth, fmParam.stride,
                            fmParam.windowSize, fmParam.padding); // 获得特征映射图
         BlocksAndStatisticalFeatures sf(tmpFeaturesMap, fmParam.cols, fmParam.rows,
                                         fmParam.ddepth, fmParam.tiledCutNums, fmParam.ringedCutNums);
-        // std::cout << "row: " << fmParam.rows << ", col: " << fmParam.cols << "i:" << i <<std::endl; 
+            // std::cout << "row: " << fmParam.rows << ", col: " << fmParam.cols << "i:" << i <<std::endl; 
         sf.getStatisticalFeatures(tmpRawFeatures);
-        // std::cout << "size of feature: "<< tmpRawFeatures.size() <<std::endl;
+            // std::cout << "size of feature: "<< tmpRawFeatures.size() <<std::endl;
         if (i == 0)
         {
             rawFeatures.reserve(nsamples * tmpRawFeatures.size());
@@ -804,7 +804,7 @@ void smokeCascadeDetector::train(Ptr<TrainData> cascadeTrainData, Ptr<TrainData>
         stageClassfier->trainBoost(stageTrainData, cascadeEvalData, smokeCascadeBoostDescisionTree::PREDICT_AUTO);
         stageStrongClassifiers.push_back(stageClassfier);
         FPR *= tmpFalsePositiveRate;
-        stageTrainData = updateTrainData(stageTrainData, stageClassfier);
+        // stageTrainData = updateTrainData(stageTrainData, stageClassfier);
         std::cout << tmpFalsePositiveRate << std::endl;
         if (tmpFalsePositiveRate <= detParams.targetFPR)
         {

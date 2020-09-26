@@ -51,23 +51,46 @@ int main(int argc, char *argv[])
     }
     else if (string(argv[1]) == "detection")
     {
-
-        std::string saveModelPath = "model-0.05373.yaml"; // 模型保存路径
-        std::string videoPath = "Basketball_yard.avi"; // 视频文件
-        std::string imagePath = "51.jpg"; // 图像文件
+        if (argc != 5)
+        {
+            std::cout << "detection usage: \n";
+            std::cout << "./smokeAdaboost detetcion < model path > < video|image > < file path >" << std::endl;
+            return 0;
+        }
         smoke_adaboost::Detector::detectorParams param; // 检测参数
-        param.videoPath = videoPath;
-        param.imagePath = imagePath;
+        std::string saveModelPath = argv[2]; // 模型保存路径
+        if (string(argv[3]) == "video")
+        {
+            std::string videoPath = argv[4]; // 视频文件
+            param.videoPath = videoPath;
+            
+            param.detectorModal = smoke_adaboost::Detector::VIDEO; 
+        }
+        else if (string(argv[3]) == "image")
+        {
+            std::string imagePath = argv[4]; // 图像文件
+            param.imagePath = imagePath;
+            param.detectorModal = smoke_adaboost::Detector::IMAGE; 
+        }
+        else {
+            std::cout << "Invalid parametors. " << std::endl;
+            std::cout << "detection usage: \n";
+            std::cout << "./smokeAdaboost detetcion < model path > < video|image > < file path >" << std::endl;
+            return 0;
+        }
         param.modelPath = saveModelPath; 
         vector<uint16_t> w = {50}; // 检测窗口大小，默认为50pixel
         param.detWindowSize = w; 
         param.threadNums = 4; // 线程数，默认为4；可调，但建议为2的倍数
-        param.detectorModal = smoke_adaboost::Detector::VIDEO; // 选择检测模式，图片(IMAGE) or 视频(VIDEO)
+        
         detetction(param);
     }
     else
     {
-        std::cout << "Invalid parametors. " << std::endl;
+        std::cout << "Invalid parametors. \n" << std::endl;
+        std::cout << "Input valid parametor; \n";
+        std::cout << "1. train: train model using dataset. \n";
+        std::cout << "2. detetcion: detetction image or video using trained model. \n";
         return 0;
     }
 

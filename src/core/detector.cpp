@@ -3,7 +3,7 @@
 namespace smoke_adaboost
 {
 
-// 读取视频并进行烟雾检测
+// 读取视频并进行烟雾检测，多线程版
 // Args:
 // _videoPath: 视频文件路径
 // _modelPath: 模型文件路径
@@ -163,7 +163,7 @@ void Detector::detectVideo(const string &_videoPath, const string &_modelPath)
     }
 }
 
-// 视频检测的朴素版设计
+// 视频检测的朴素版设计， 单线程滑动窗口版
 // Args:
 //  _videoPath: 视频文件路径
 //  _modelPath: 模型文件路径
@@ -314,7 +314,7 @@ void Detector::detectImageRaw(const string &_imagePath, const string &_modelPath
     drawResult(image);
 }
 
-// 检测烟雾图片
+// 检测烟雾图片， 多线程版
 // Args:
 //  _imagePath: 图片文件路径
 //  _modelPath: 模型文件路径
@@ -450,8 +450,14 @@ void Detector::detectImage(const string &_imagePath, const string &_modelPath)
         t.join();
     }
     result = tmpRes;
-
+    results_cache.push_back(result);
+    if (results_cache.size() >= 5)
+    {
+        results_cache.clear();
+    }
+#ifdef DRAW_RESULTS
     drawResult(image);
+#endif
 }
 
 // 画检测框并显示图片
@@ -489,6 +495,12 @@ void Detector::drawResult(Mat &frame)
         waitKey(2);
     else if (param.detectorModal == IMAGE)
         waitKey(0);
+}
+
+// 获取检测结果
+const vector<vector<Detector::predictRes> >& Detector::get_predictions()
+{
+    return results_cache;
 }
 
 // 根据参数选择检测视频模式和检测图像模式

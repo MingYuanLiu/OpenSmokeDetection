@@ -1,3 +1,6 @@
+// project: adaboost cpp code
+// data: 2020.02
+// author: MingYuan Liu
 #ifndef DETECTOR_HPP
 #define DETECTOR_HPP
 
@@ -42,7 +45,7 @@ public:
         uint16_t h;
     };
     
-    Detector(const detectorParams& _param) { param = _param; }
+    explicit Detector(const detectorParams& _param) { param = _param; }
     ~Detector();
     void run();
     void detectVideo(const string& _videoPath, const string& _modelPath);
@@ -50,12 +53,13 @@ public:
     void detectImage(const string& _imagePath, const string& _modelPath);
     void detectImageRaw(const string &_imagePath, const string &_modelPath);
     void drawResult(Mat &frame);
+    const vector<vector<predictRes> >& get_predictions();
 
 private:
     detectorParams param;
     vector<predictRes> result;
+    vector<vector<predictRes> > results_cache;
 };
-
 
 } // namespace smoke_adaboost
 
