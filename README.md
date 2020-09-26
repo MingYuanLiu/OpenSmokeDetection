@@ -1,15 +1,15 @@
-<<<<<<< HEAD
 # OpenSmokeDetection:  A real-time smoke detector
 # OpenSmokeDetetction
-* [OpenSmokeDetection:  A real\-time smoke detector](#opensmokedetection--a-real-time-smoke-detector)
-* [OpenSmokeDetetction](#opensmokedetetction)
-  * [使用方法](#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
-    * [下载源码](#%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81)
-    * [编译](#%E7%BC%96%E8%AF%91)
-    * [使用方法](#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95-1)
-      * [训练](#%E8%AE%AD%E7%BB%83)
-      * [检测](#%E6%A3%80%E6%B5%8B)
+- [OpenSmokeDetection:  A real-time smoke detector](#opensmokedetection-a-real-time-smoke-detector)
+- [OpenSmokeDetetction](#opensmokedetetction)
+  - [使用方法](#使用方法)
+    - [下载源码](#下载源码)
+    - [编译](#编译)
+    - [使用方法](#使用方法-1)
+      - [训练](#训练)
+      - [检测](#检测)
 
+=======
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/res2.png)
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/result.png)
@@ -131,4 +131,4 @@ python writeAnnotation.py -dir dataset-directory --annotation filename.txt
 }
 ```
 
-说明：使用时请不要忘记将头文件和链接文件添加到自己程序的编译参数中 : ) 
+说明：使用时请不要忘记将头文件和链接文件添加到自己程序的编译参数中 :) 
