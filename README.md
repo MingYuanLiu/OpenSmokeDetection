@@ -1,6 +1,6 @@
 # OpenSmokeDetection:  A real-time smoke detector
 # OpenSmokeDetetction
-- [OpenSmokeDetection:  A real-time smoke detector](#opensmokedetection-a-real-time-smoke-detector)
+- [OpenSmokeDetection:  A real-time smoke detector](#opensmokedetection--a-real-time-smoke-detector)
 - [OpenSmokeDetetction](#opensmokedetetction)
   - [使用方法](#使用方法)
     - [下载源码](#下载源码)
@@ -9,21 +9,20 @@
       - [训练](#训练)
       - [检测](#检测)
 
-=======
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/res2.png)
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/result.png)
 
 [English](README_en.md)
 
-OpenSmokeDetction是一个实时检测烟雾的算法；算法核心思想是使用梯度直方图和局部二进制模式特征 + adaboost提升算法对烟雾图片进行识别分类，区分出有烟和无烟。
+OpenSmokeDetction是一个实时烟雾检测算法；算法核心思想是使用梯度直方图和局部二进制模式特征 + adaboost提升算法对烟雾图片进行分类识别，区分出有烟和无烟。
 
-具体算法可参考：[A double mapping framework for extraction of shape-invariant features based on multi-scale partitions with AdaBoost for video smoke detection](https://www.sciencedirect.com/science/article/pii/S0031320312002786)
+算法内容可参考：[A double mapping framework for extraction of shape-invariant features based on multi-scale partitions with AdaBoost for video smoke detection](https://www.sciencedirect.com/science/article/pii/S0031320312002786)
 
-本项目对上述算法做了大量工程实现和优化工作：
+本项目对上述算法做了工程实现和性能优化工作，具体可分为以下四个方面：
 
-1. 本项目实现了上述算法，并达到和作者提供的测试样例类似的识别效果；
-2. 论文中仅讨论了对一个图像小块进行检测，但是对一幅图片或视频帧却没有一个完整的算法流程；我在本项目中对其进行了拓展，算法的应用价值得到提升；具体方法如下：a) 计算整幅图片或视频帧的特征图；b) 将原图的待检测框映射至特征图上；c) 使用检测框在特征图上滑动，计算对应的统计特征并送入adaboost分类中完成识别；如图1所示
+1. 本项目实现了上述算法，在总共有37442张样本的数据集中达到90%的识别准确率和94%的召回率，其中烟雾数据样本有13442张，非烟雾样本有24000张；
+2. 论文中仅讨论了对一个图像小块进行检测，但是对一幅图片或视频帧却没有一个完整的算法流程；我在本项目中对其进行了拓展，算法的应用价值得到提升；具体方法如下：a) 计算整幅图片或视频帧的特征图；b) 将原图的待检测框映射至特征图上；c) 使用检测框在特征图上滑动，计算对应的统计特征并送入adaboost分类器中完成识别；如图1所示
 3. 使用了积分图像技术加速特征图像的计算；
 4. 使用特征图像加速图片的检测和特征的计算速度；
 

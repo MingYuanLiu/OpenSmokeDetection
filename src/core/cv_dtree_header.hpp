@@ -264,7 +264,8 @@ namespace smoke_adaboost
         struct WorkData
         {
             WorkData(const Ptr<TrainData>& _data);
-
+            
+            // train data
             Ptr<TrainData> data;
             vector<WNode> wnodes;
             vector<WSplit> wsplits;
@@ -273,9 +274,13 @@ namespace smoke_adaboost
             vector<double> cv_node_risk;
             vector<double> cv_node_error;
             vector<int> cv_labels;
+            // 每个决策树分类器的权值
             vector<double> sample_weights;
+            // 分类groundtruth label
             vector<int> cat_responses;
+            // 回归groudtruth label
             vector<double> ord_responses;
+            // sample index
             vector<int> sidx;
             int maxSubsetSize;
         };

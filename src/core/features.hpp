@@ -17,6 +17,7 @@
 #include <array>
 #include <thread>
 #include <sys/time.h>
+#include <utility>
 
 namespace smoke_adaboost{
 

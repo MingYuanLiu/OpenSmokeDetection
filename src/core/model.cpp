@@ -269,6 +269,10 @@ void smokeCascadeBoostDescisionTree::normalizeWeights()
 
 // 深度优先遍历（前序遍历）整棵树并将节点的估计值乘上相应的比例
 //
+// args:
+//      root  根结点
+//      scale 节点权重
+//
 void smokeCascadeBoostDescisionTree::scaleTree(int root, float scale)
 {
     int nidx = root, pidx = 0;
@@ -286,14 +290,15 @@ void smokeCascadeBoostDescisionTree::scaleTree(int root, float scale)
         }
         for (pidx = node->parent; pidx >= 0 && nodes[pidx].right == nidx;
              nidx = pidx, pidx = nodes[nidx].parent)
-            ; // 右节点向上回溯
+            ; // 访问右节点后向上进行回溯
         if (pidx < 0)
             break;
         nidx = nodes[pidx].right;
     }
 }
 
-// 根据boost算法的类型修改节点的值
+// 更新节点的
+//
 void smokeCascadeBoostDescisionTree::calcValue(int nidx, const vector<int> &_sidx)
 {
     DTreesImpl::calcValue(nidx, _sidx);

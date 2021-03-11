@@ -61,7 +61,7 @@ void Detector::detectVideo(const string &_videoPath, const string &_modelPath)
         assert(threadNums > 0);
         
             // debug
-            // double t0 = cv::getTickCount();
+             double t0 = cv::getTickCount();
 
         // multi thread generate map
         generatFeatureMapMultiThread(grayFrame, featureMap, featureMapCols, featureMapRows, featureMapDepth, strideOnFeatureMap, windowSizeOnFeatureMap, 8);
@@ -150,14 +150,15 @@ void Detector::detectVideo(const string &_videoPath, const string &_modelPath)
                 }
             });
         }
-                //debug
-                // double t2 = ((double)(cv::getTickCount() - t0) / cv::getTickFrequency()) * 1000000.0;
-                // if (t2 > 50000.0)
-                //     std::cout << "origin 's time" << t2 << "us" << std::endl;
+
         for (auto &t : predictThreads)
         {
             t.join();
         }
+                        //debug
+                 double t2 = ((double)(cv::getTickCount() - t0) / cv::getTickFrequency()) * 1000000.0;
+                // if (t2 > 50000.0)
+                 std::cout << "origin 's time" << t2 / 1000 << "ms" << std::endl;
         result = tmpRes;
         drawResult(frame);
     }
