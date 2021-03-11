@@ -10,7 +10,6 @@
       - [检测](#检测)
 
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/res2.png)
-
 ![](https://github.com/MingYuanLiu/OpenSmokeDetection/blob/master/data/result.png)
 
 [English](README_en.md)
